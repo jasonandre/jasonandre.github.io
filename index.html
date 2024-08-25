@@ -2,98 +2,104 @@
 <html>
 
 <head>
-    <!-- 여기는 웹페이지에 대한 정보 -->
-    <title>이미지 분류</title>
-    <meta charset="UTF-8">
-    <meta name="description" content="이미지를 분류하는 어플리케이션">
-    <meta name="keywords" content="Keras, Huggingface">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
     <style>
-        table,
-        th,
-        td {
-            border: 1px solid black;
-            border-collapse: collapse;
+        h1 {
+            padding: 30px;
+            font-weight: 600 !important;
+            font-size: 3.2em;
+        }
+
+        .well {
+            width: 50%;
+        }
+
+        mark {
+            background-color: #2ec47e;
+            color: white;
+            border-radius: 5px;
         }
     </style>
+
+    <title>표지판 인식</title>
 </head>
 
+
 <body>
-    <!-- 여기는 화면에 보이는 내용 -->
-    <!-- 헤딩 테그 사용-->
-    <h1>Heading 1</h1>
-    <h2>Heading 2</h2>
-    <h3>Heading 3</h3>
-    <h4>Heading 4</h4>
-    <h5>Heading 5</h5>
-    <h6>Heading 6</h6>
+    <section class="speed_detector">
+        <div class="container">
+            <div class="col-md-12">
+                <center>
+                    <h1>교통 표지판 인식 프로젝트</h1>
+                    <p>이미지를 올려주세요</p>
+                </center>
+            </div>
+            <div class="col-md-12">
+                <center>
+                    <div class="well">
+                        <form action="" enctype="multipart/form-data" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input type="file" class="form-control" id="file" name="file">
+                            </div>
+                            <div id="selectedBanner"></div>
+                            <br>
+                            <button type="submit" class="btn btn-success">이미지 분류하기</button>
+                        </form>
+                    </div>
+                </center>
+            </div>
+            {% if objs %}
+            <div class="row"  >
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <center>
+                        <h4>업로드한 이미지는 <mark>{{ objs }}</mark>
+                            입니다.</h4>
+                        <h4>Probabilities: {{ probs }}</h4>
+                        <img src="{{ img_url }}" alt="Uploaded Image" class="uploaded-image" width="50%">
+                    </center>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+            {% endif %}
 
-    <!-- 문단 테그 사용 -->
-    <p>This is a paragraph.</p>
-    <p>This is a paragraph.</p>
-    <p>This is a paragraph.</p>
+            <script>
+                var selDiv = "";
+                var storedFiles = [];
+                $(document).ready(function () {
+                    $("#file").on("change", handleFileSelect);
+                    selDiv = $("#selectedBanner");
+                });
 
-    <!-- 문단 안에 줄 바꿈 사용 -->
-    <p>
-        To break lines<br>in a text,<br>use the br element.
-    </p>
+                function handleFileSelect(e) {
+                    var files = e.target.files;
+                    var filesArr = Array.prototype.slice.call(files);
+                    filesArr.forEach(function (f) {
+                        if (!f.type.match("image.*")) {
+                            return;
+                        }
+                        storedFiles.push(f);
 
-    <!-- 리스트 사용 -->
-    <ul>
-        <li>Coffee</li>
-        <li>Tea</li>
-        <li>Milk</li>
-    </ul>
-
-    <!-- 숫자 리스트 사용 -->
-    <ol>
-        <li>Coffee</li>
-        <li>Tea</li>
-        <li>Milk</li>
-    </ol>
-
-    <!-- 테이블 사용 -->
-
-    <table style="width: 50%">
-        <tr>
-            <th>Firstname</th>
-            <th>Lastname</th>
-            <th>Age</th>
-        </tr>
-        <tr>
-            <td>Jill</td>
-            <td>Smith</td>
-            <td>50</td>
-        </tr>
-        <tr>
-            <td>Eve</td>
-            <td>Jackson</td>
-            <td>94</td>
-        </tr>
-    </table>
-    <br>
-
-    <!-- 이미지 추가 -->
-    <img src="clova.jpg" alt="clova in garden" width="200" height="300">
-    <br>
-
-    <!-- 폼 추가 -->
-    <form action="result.html" method="post">
-        First name:<br>
-        <input type="text" name="firstname" value="Mickey"><br>
-        Last name:<br>
-        <input type="text" name="lastname" value="Mouse"><br>
-        <input type="submit" value="Submit">
-    </form>
-
-
-
-
-
-
-
-
-
-
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            var html =
+                                '<img src="' +
+                                e.target.result +
+                                "\" data-file='" +
+                                f.name +
+                                "alt='Category Image' height='200px' width='200px'>";
+                            selDiv.html(html);
+                        };
+                        reader.readAsDataURL(f);
+                    });
+                }
+            </script>
+        </div>
+    </section>
 </body>
 
 </html>
